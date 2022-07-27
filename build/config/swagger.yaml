@@ -1,0 +1,755 @@
+openapi: 3.0.0
+info:
+  title: Music Band Dashboard
+  description: Music Band Control Panel
+  version: 1.0.0
+
+servers:
+  - url: https://folksoul-api.omar.redberryinternship.ge/
+    description: production server
+
+  - url: http://localhost:4242/
+    description: local server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+paths:
+  /login:
+    post:
+      tags:
+        - Authorization
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                user_name:
+                  type: string
+                  required: true
+                password:
+                  type: string
+                  required: true
+              example:
+                user_name: omari32
+                password: '1234'
+      responses:
+        '200':
+          description: User Auth.
+          content:
+            application/json:
+              schema:
+                properties:
+                  user_name:
+                    type: string
+                    required: true
+                  password:
+                    type: string
+                    required: true
+
+                example:
+                  token: 'sfjririowejfisjfjseifjsejfesij'
+
+  /band/add:
+    post:
+      tags:
+        - Band Members
+      security:
+        - bearerAuth: []
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                  required: true
+                instrument:
+                  type: number
+                  required: true
+                orbitLength:
+                  type: string
+                  required: true
+                color:
+                  type: string
+                  required: true
+                biography:
+                  type: string
+                  required: true
+              example:
+                name: ბექა
+                instrument: გიტარა
+                orbitLength: 300
+                color: '#ffffff'
+                biography: ბიოგრაფია
+      responses:
+        '201':
+          description: Band Member Added.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    required: true
+
+                example:
+                  message: Band member add
+
+  /avatar/upload/{memberId}:
+    post:
+      parameters:
+        - in: path
+          name: memberId
+          schema:
+            type: string
+          required: true
+          description: upload member avatar
+      tags:
+        - Band Members
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                avatar:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: update member avatar
+          content:
+            application/json:
+              schema:
+                properties:
+                  fileName:
+                    type: string
+                    format: binary
+                example:
+                  {
+                    'uploaded':
+                      {
+                        'avatar': '/images/avatar-unnamed.jpeg',
+                        'memberId': '62c1486f1cb1d71283300c8a',
+                        '_id': '62c226418a53eac8b8b25695',
+                      },
+                  }
+
+  /band/get:
+    get:
+      tags:
+        - Band Members
+      responses:
+        '200':
+          description: Get Members
+          content:
+            application/json:
+              schema:
+                properties:
+                name:
+                  type: string
+                  required: true
+                instrument:
+                  type: number
+                  required: true
+                orbitLength:
+                  type: string
+                  required: true
+                color:
+                  type: string
+                  required: true
+                biography:
+                  type: string
+                  required: true
+                example:
+                  [
+                    {
+                      '_id': '62b07792da893d093c5746c1',
+                      'name': 'გედფდფ',
+                      'instrument': 'ფანდური',
+                      'orbitLength': 400,
+                      'color': '#ffffff',
+                      'biography': 'ფანდურა',
+                      'uploads':
+                        [
+                          {
+                            '_id': '62c19213ee129f5e98f5d82f',
+                            'avatar': '/images/avatar-unnamed.jpeg',
+                            'memberId': '62bc05ecb344f9cc27aa74c8',
+                          },
+                        ],
+                    },
+                  ]
+
+  /band/get-one/{memberId}:
+    get:
+      summary: Get band member by ID
+      parameters:
+        - in: path
+          name: memberId
+          schema:
+            type: string
+          required: true
+          description: Detailed info about band member
+      tags:
+        - Band Members
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: get band member
+          content:
+            application/json:
+              schema:
+                properties:
+                name:
+                  type: string
+                  required: true
+                instrument:
+                  type: number
+                  required: true
+                orbitLength:
+                  type: string
+                  required: true
+                color:
+                  type: string
+                  required: true
+                biography:
+                  type: string
+                  required: true
+
+                example:
+                  [
+                    {
+                      '_id': '62bc25da01e98829b31c0452',
+                      'name': 'ჯგუფი',
+                      'instrument': 'ჯგუფის',
+                      'orbitLength': 300,
+                      'color': '#ffffff',
+                      'biography': 'ჯგუფის',
+                    },
+                  ]
+
+  /avatar/get/{memberId}:
+    get:
+      summary: Get band avatar member by ID
+      parameters:
+        - in: path
+          name: memberId
+          schema:
+            type: string
+          required: true
+          description: band member avatar
+      tags:
+        - Band Members
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: get band member avatar
+          content:
+            application/json:
+              schema:
+                properties:
+                avatar:
+                  type: string
+                  required: true
+                memberId:
+                  type: number
+                example:
+                  {
+                    'avatars':
+                      [
+                        {
+                          '_id': '62c2270f19a2429180124a13',
+                          'avatar': '/images/avatar-Joker-trailer-28.png',
+                          'memberId': '62c1c9428ac6cb867adf5482',
+                        },
+                      ],
+                  }
+
+  /band/delete/{memberId}:
+    delete:
+      summary: Delete band member by ID
+      parameters:
+        - in: path
+          name: memberId
+          schema:
+            type: string
+          required: true
+          description: Delete band member with id
+      tags:
+        - Band Members
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Delete band member
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+
+                example:
+                  message: Band member deleted
+
+  /band/edit/{memberId}:
+    put:
+      summary: Edit band member by ID
+      parameters:
+        - in: path
+          name: memberId
+          schema:
+            type: string
+          required: true
+          description: Edit band member by ID
+
+      tags:
+        - Band Members
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+              name:
+                type: string
+                required: true
+              instrument:
+                type: number
+                required: true
+              orbitLength:
+                type: string
+                required: true
+              color:
+                type: string
+                required: true
+              biography:
+                type: string
+                required: true
+            example:
+              {
+                'name': 'დათო',
+                'instrument': 'დოლი',
+                'orbitLength': 200,
+                'color': '#ffffff',
+                'biography': 'ბიოგრაფია',
+              }
+
+      responses:
+        '200':
+          description: edit band member.
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+
+                example:
+                  message: Band member updated
+
+  /social-network/add:
+    post:
+      tags:
+        - Social Links
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                  required: true
+                socialUrl:
+                  type: string
+                  required: true
+
+              example:
+                name: YouTube
+                socialUrl: http://youtube.com
+      responses:
+        '201':
+          description: Add social link
+          content:
+            application/json:
+              schema:
+              properties:
+                name:
+                  type: string
+                  required: true
+                socialUrl:
+                  type: string
+                  required: true
+
+              example:
+                message: 'Social network added'
+
+  /social-avatar/upload/{memberId}:
+    post:
+      parameters:
+        - in: path
+          name: memberId
+          schema:
+            type: string
+          required: true
+          description: upload social link avatar
+      tags:
+        - Social Links
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                avatar:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: update social link avatar
+          content:
+            application/json:
+              schema:
+                properties:
+                  fileName:
+                    type: string
+                    format: binary
+                example:
+                  {
+                    'message': 'Social avatar updated',
+                    'uploaded':
+                      {
+                        'socialAvatar': '/images/avatar-deer_art_vector_134088_2560x1600.jpeg',
+                        'memberId': '62c1c9428ac6cb867adf5482',
+                        '_id': '62c22a1014f6088078709873',
+                      },
+                  }
+
+  /social-network/get:
+    get:
+      tags:
+        - Social Links
+      responses:
+        '200':
+          description: Get social links
+          content:
+            application/json:
+              schema:
+              properties:
+                name:
+                  type: string
+                  required: true
+                socialUrl:
+                  type: string
+                  required: true
+
+              example:
+                [
+                  {
+                    '_id': '62c09aef675115d9e4f32d87',
+                    'name': 'Twitter',
+                    'socialUrl': 'https://twitter.com',
+                    'socialUploads':
+                      [
+                        {
+                          '_id': '62c09aef675115d9e4f32d87',
+                          'socialAvatar': '/images/avatar-digitization-g12e7f4df0_640.jpg',
+                          'memberId': '62c34b356fe228a6897c1348',
+                        },
+                      ],
+                  },
+                ]
+
+  /social-network/get-one/{socialId}:
+    get:
+      summary: Get social link by ID
+      parameters:
+        - in: path
+          name: socialId
+          schema:
+            type: string
+          required: true
+          description: Get social link by ID
+      tags:
+        - Social Links
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Get social link
+          content:
+            application/json:
+              schema:
+                properties:
+                  name:
+                    type: string
+                    required: true
+                  socialUrl:
+                    type: string
+                    required: true
+
+                example:
+                  [
+                    {
+                      '_id': '62c1dcbf13c8180d9f87ee30',
+                      'name': 'Reddit',
+                      'socialUrl': 'http://reddit.com',
+                    },
+                  ]
+  /social-avatar/get/{memberId}:
+    get:
+      summary: Get social link avatar by ID
+      parameters:
+        - in: path
+          name: memberId
+          schema:
+            type: string
+          required: true
+          description: Get social link avatar by ID
+      tags:
+        - Social Links
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Get social link avatar by ID
+          content:
+            application/json:
+              schema:
+                properties:
+                avatar:
+                  type: string
+                  required: true
+                memberId:
+                  type: number
+                example:
+                  {
+                    'socialAvatar':
+                      [
+                        {
+                          '_id': '62c22a1014f6088078709873',
+                          'socialAvatar': '/images/avatar-EQc8iWoU4AE85OE.jpeg',
+                          'memberId': '62c1c9428ac6cb867adf5482',
+                        },
+                      ],
+                  }
+
+  /social-network/delete/{socialId}:
+    delete:
+      summary: Delete social link by ID
+      parameters:
+        - in: path
+          name: socialId
+          description: Delete social link by ID
+      tags:
+        - Social Links
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Delete employee
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+
+                example:
+                  message: Social network deleted
+
+  /social-network/edit/{socialId}:
+    put:
+      summary: Edit social link by ID
+      parameters:
+        - in: path
+          name: socialId
+          schema:
+            type: string
+          required: true
+          description: Edit social link by ID
+      tags:
+        - Social Links
+      security:
+        - bearerAuth: []
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                SocialUrl:
+                  type: string
+              example:
+                name: Twitter
+                socialUrl: http://twitter.com
+      responses:
+        '200':
+          description: Edit social link
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+
+                example:
+                  message: Social network updated
+
+  /band-info/get:
+    get:
+      tags:
+        - Band Info
+      responses:
+        '200':
+          description: Get band info
+          content:
+            application/json:
+              schema:
+                properties:
+                  text:
+                    type: string
+                    required: true
+                example:
+                  {
+                    '_id': '62bef01763c893d57e4e83c7',
+                    'text': 'დაწყვილების პერიოდი ზომიერ და არქტიკულ რეგიონებში მობინადრე დათვებისთვის, ჩვეულებრივ, გაზაფხულია. მაკეობა ხანმოკლეა, თუმცა იმის გამო, რომ დათვი არ მშობიარობს მანამ, სანამ ზამთრის შუა ძილში არ იქნება, განაყოფიერებული კვერცხუჯრედის საშვილოსნოში იმპლანტაცია ხდება მხოლოდ ოქტომბე-ნოემბერში',
+                    'bandAvatars':
+                      [
+                        {
+                          '_id': '62c4bb0e30d9104b545ad76c',
+                          'bandAvatar': '/images/avatar-digitization-g12e7f4df0_640.jpg',
+                          'bandId': '62c34c0163b157643ada9f59',
+                        },
+                      ],
+                  }
+
+  /band-info/update:
+    put:
+      tags:
+        - Band Info
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                text:
+                  type: string
+
+              example:
+                text: "დაწყვილების პერიოდი ზომიერ და არქტიკულ რეგიონებში მობინადრე დათვებისთვის, ჩვეულებრივ, გაზაფხულია. მაკეობა ხანმოკლეა, თუმცა იმის გამო, რომ დათვი არ მშობიარობს მანამ, სანამ ზამთრის შუა ძილში არ იქნება, განაყოფიერებული კვერცხუჯრედის საშვილოსნოში იმპლანტაცია ხდება მხოლოდ ოქტომბე-ნოემბერში, ამ პროცესს „დაგვიანებული იმპლანტაცია“ ეწოდება.\n\nდათვი შობს წარმოუდგენლად პატარა ბელებს, ხშირ შემთხვევაში — ორს. ახალშობილები მხოლოდ 200-700 გრამს იწონიან და ძალიან ჰგვანან პატარა ვირთხებს. ისინი თვალაუხელელნი, უკბილონი და ბეწვის გარეშე იბადებიან. პატარები რჩებიან რა ბუნაგში დედასთან, მისი ნოყიერი რძით იკვებებიან და სწრაფად იზრდებიან. როდესაც გაზაფხულზე ისინი ბარბაცით გამოდიან ბუნაგიდან და მზეს ეფიცხებიან, უკვე მოზრდილები არიან\nდათვები, როგორც წესი, ეულად ბინადრობენ, თუმცა საკვების მოპოვების დროს ხშირად იკრიბებიან. ბელები ორი-სამი წლის განმავლობაში დედასთან რჩებიან. ამ პერიოდში მდედრი დათვი კიდევ მაკეობს, ამგვარად, მამრი დათვებიც ცხოვრების რაღაც ნაწილს ნაშიერებთან ატარებენ.საუკუნეების განმავლობაში დათვების ყველა სახეობაზე ნადირობდნენ. გამოსადეგია დათვის ხორცი, ტყავი, ცხიმი, მათ აბარებე ზოოპარკებში ან უბრალოდ სპორტული ინტერესის გამო ნადირობდნენ მათზე.\n"
+
+      responses:
+        '200':
+          description: Edit social link
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+
+                example:
+                  message: Band info updated
+
+  /band-avatar/upload/{bandId}:
+    post:
+      parameters:
+        - in: path
+          name: bandId
+          schema:
+            type: string
+          required: true
+          description: upload band avatar
+      tags:
+        - Band Info
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                avatar:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: update band avatar
+          content:
+            application/json:
+              schema:
+                properties:
+                  fileName:
+                    type: string
+                    format: binary
+                example:
+                  {
+                    'message': 'Band avatar updated',
+                    'uploaded':
+                      {
+                        'bandAvatar': '/images/avatar-deer_art_vector_134088_2560x1600.jpeg',
+                        'bandId': '62c1c9428ac6cb867adf5482',
+                        '_id': '62c22e0e7f51bc5f5056947c',
+                      },
+                  }
+
+  /band-avatar/get/{bandId}:
+    get:
+      summary: Get band avatar by ID
+      parameters:
+        - in: path
+          name: memberId
+          schema:
+            type: string
+          required: true
+          description: Get band avatar by ID
+      tags:
+        - Band Info
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Get band avatar by ID
+          content:
+            application/json:
+              schema:
+                properties:
+                bandAvatar:
+                  type: string
+                  required: true
+                bandId:
+                  type: number
+                example:
+                  {
+                    'bandAvatar':
+                      [
+                        {
+                          '_id': '62c22e0e7f51bc5f5056947c',
+                          'bandAvatar': '/images/avatar-unnamed.jpeg',
+                          'bandId': '62c1c9428ac6cb867adf5482',
+                        },
+                      ],
+                  }

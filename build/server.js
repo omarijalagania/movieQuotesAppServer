@@ -1,36 +1,42 @@
 "use strict";
 
+var dotenv = _interopRequireWildcard(require("dotenv"));
+
 var _express = _interopRequireDefault(require("express"));
+
+var _cors = _interopRequireDefault(require("cors"));
+
+var _path = _interopRequireDefault(require("path"));
+
+var _bodyParser = _interopRequireDefault(require("body-parser"));
+
+var _config = require("./config");
+
+var _routes = require("./routes");
+
+var _middlewares = require("./middlewares");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const images = ["https://c.tenor.com/rK3k9EgLkhEAAAAC/steins-gate.gif", "https://c.tenor.com/wvZfA6FeOs0AAAAd/naruto-boruto.gif", "https://media3.giphy.com/media/pGlDpwgWTLgBi/giphy.gif", "https://c.tenor.com/stGMm1ODsGsAAAAC/anime-vinland-saga.gif", "https://i.pinimg.com/originals/ee/8f/ed/ee8fed71f21624f59205460b23820873.gif", "https://i.pinimg.com/originals/dd/9d/1b/dd9d1bef17c23fccf6f8224d7a70b766.gif"];
-const server = (0, _express.default)();
-server.get("/", async (_, res) => {
-  const randomImgIdx = Math.floor(Math.random() * 100) % images.length;
-  res.send(`
-    <html>
-        <head>
-            <title>Anime Images</title>
-        </head>
-        <body>
-        <style>
-            body {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                background-color: #0c112d;
-            }
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
-            img {
-                border-radius: 10px;
-            }
-        </style>
-        <a href="/" style="width: 50%">
-            <img src="${images[randomImgIdx]}" style="width: 100%" />
-        </a>
-        </body>
-    </html>
-    `);
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+dotenv.config({
+  path: _path.default.resolve(__dirname, '../.env')
 });
-server.listen(4444, () => console.log("Server is listening at http://localhost:4444"));
+const app = (0, _express.default)();
+app.use(_express.default.json());
+(0, _config.connectDB)(false);
+app.use((0, _cors.default)());
+app.use(_bodyParser.default.json());
+app.use(_express.default.urlencoded({
+  extended: false
+}));
+app.use('/images', _express.default.static(_path.default.join(__dirname, 'public')));
+app.use('/user', _routes.RegisterRouter); //@ts-ignore
+
+app.use('/api-docs', _middlewares.authMiddleware, (0, _middlewares.swaggerMiddleware)());
+app.listen(process.env.PORT || '4400', () => {
+  console.log(`Server is running on: ${process.env.BASE_URL}:${process.env.PORT}`);
+});
