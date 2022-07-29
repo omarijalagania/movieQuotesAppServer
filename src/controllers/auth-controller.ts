@@ -89,7 +89,7 @@ export const userLogin = async (req: Request, res: Response) => {
     }
 
     const token = jwt.sign(
-      { _id: user._id, name: user.userName },
+      { _id: user._id, name: user.email },
       process.env.TOKEN_SECRET
     )
     res.header('auth-token', token).send({ token: token })
