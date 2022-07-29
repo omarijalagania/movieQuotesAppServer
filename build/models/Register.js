@@ -25,6 +25,10 @@ const registerSchema = new _mongoose.default.Schema({
   },
   repeatPassword: {
     type: String
+  },
+  confirmed: {
+    type: Boolean,
+    default: false
   }
 });
 

@@ -17,7 +17,6 @@ const userRegister = async (req, res) => {
   const {
     user_name,
     password,
-    repeatPassword,
     email
   } = req.body;
   const {

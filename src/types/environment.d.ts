@@ -13,6 +13,9 @@ declare global {
       MONGO_PASSWORD: number
       MONGO_PARAMS: number
       MONGO_HOST: string
+
+      EMAIL_USERNAME: string
+      EMAIL_PASSWORD: string
     }
   }
 }

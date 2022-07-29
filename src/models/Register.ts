@@ -17,6 +17,10 @@ const registerSchema = new mongoose.Schema({
   repeatPassword: {
     type: String,
   },
+  confirmed: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 export default mongoose.model('User', registerSchema)
