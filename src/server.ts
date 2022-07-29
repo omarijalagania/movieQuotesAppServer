@@ -2,6 +2,7 @@ import * as dotenv from 'dotenv'
 import express from 'express'
 import cors from 'cors'
 import path from 'path'
+import SwaggerUI from 'swagger-ui-express'
 import bodyParser from 'body-parser'
 import { connectDB } from 'config'
 import { RegisterRouter } from 'routes'
@@ -18,8 +19,7 @@ app.use('/images', express.static(path.join(__dirname, 'public')))
 
 app.use('/user', RegisterRouter)
 
-//@ts-ignore
-app.use('/api-docs', swaggerMiddleware())
+app.use('/api-docs', SwaggerUI.serve, swaggerMiddleware())
 
 app.listen(process.env.PORT || '4400', () => {
   console.log(
