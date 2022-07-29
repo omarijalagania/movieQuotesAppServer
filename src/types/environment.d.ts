@@ -16,6 +16,7 @@ declare global {
 
       EMAIL_USERNAME: string
       EMAIL_PASSWORD: string
+      EMAIL_FROM: string
     }
   }
 }

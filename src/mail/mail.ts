@@ -3,7 +3,7 @@ import nodemailer from 'nodemailer'
 const sendConfirmMail = async (
   email: string,
   token: string,
-  user_name: string
+  userName: string
 ) => {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -13,10 +13,10 @@ const sendConfirmMail = async (
     },
   })
   const mailOptions = {
-    from: '<omar.jalagania@gmail.com>',
+    from: `<${process.env.EMAIL_FROM}>`,
     to: email,
     subject: 'Confirm your email',
-    html: `Hello, ${user_name},  please confirm email by clicking on the link: <a href="http://localhost:4242/user/confirm/${token}">Confirm</a>`,
+    html: `Hello, ${userName},  please confirm email by clicking on the link: <a href="http://localhost:4242/user/confirm/${token}">Confirm</a>`,
   }
   transporter.sendMail(mailOptions, (err, info) => {
     if (err) {

@@ -6,7 +6,7 @@ import { validateLogin, validateRegister } from 'schema'
 import { sendConfirmMail } from 'mail'
 
 export const userRegister = async (req: Request, res: Response) => {
-  const { user_name, password, email } = req.body
+  const { userName, password, email } = req.body
   const { error } = validateRegister(req.body)
 
   try {
@@ -24,17 +24,17 @@ export const userRegister = async (req: Request, res: Response) => {
     const hashedPassword = bcrypt.hashSync(password, salt)
 
     const newUser = await User.create({
-      user_name: user_name,
+      userName: userName,
       email: email,
       password: hashedPassword,
     })
 
     const token = jwt.sign(
-      { _id: newUser._id, name: newUser.user_name },
+      { _id: newUser._id, name: newUser.userName },
       process.env.TOKEN_SECRET
     )
 
-    await sendConfirmMail(newUser.email, token, newUser.user_name)
+    await sendConfirmMail(newUser.email, token, newUser.userName)
 
     return res.status(200).send('Confirm Email sent')
   } catch (error) {
@@ -45,7 +45,6 @@ export const userRegister = async (req: Request, res: Response) => {
 export const userConfirm = async (req: Request, res: Response) => {
   try {
     const { token } = req.params
-    console.log(token)
     const { _id } = jwt.verify(token, process.env.TOKEN_SECRET) as any
     const user = await User.findById(_id)
 
@@ -90,7 +89,7 @@ export const userLogin = async (req: Request, res: Response) => {
     }
 
     const token = jwt.sign(
-      { _id: user._id, name: user.user_name },
+      { _id: user._id, name: user.userName },
       process.env.TOKEN_SECRET
     )
     res.header('auth-token', token).send({ token: token })

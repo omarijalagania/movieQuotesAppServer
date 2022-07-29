@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 
 const registerSchema = new mongoose.Schema({
-  user_name: {
+  userName: {
     type: String,
     lowercase: true,
     required: true,
