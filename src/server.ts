@@ -5,7 +5,7 @@ import path from 'path'
 import bodyParser from 'body-parser'
 import { connectDB } from 'config'
 import { RegisterRouter } from 'routes'
-import { authMiddleware, swaggerMiddleware } from 'middlewares'
+import { swaggerMiddleware } from 'middlewares'
 dotenv.config({ path: path.resolve(__dirname, '../.env') })
 const app = express()
 app.use(express.json())
@@ -19,7 +19,7 @@ app.use('/images', express.static(path.join(__dirname, 'public')))
 app.use('/user', RegisterRouter)
 
 //@ts-ignore
-app.use('/api-docs', authMiddleware, swaggerMiddleware())
+app.use('/api-docs', swaggerMiddleware())
 
 app.listen(process.env.PORT || '4400', () => {
   console.log(
