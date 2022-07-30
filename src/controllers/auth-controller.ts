@@ -44,7 +44,7 @@ export const userRegister = async (req: Request, res: Response) => {
 
 export const userConfirm = async (req: Request, res: Response) => {
   try {
-    const { token } = req.params
+    const token = req.body.token
     const { _id } = jwt.verify(token, process.env.TOKEN_SECRET) as any
     const user = await User.findById(_id)
 
