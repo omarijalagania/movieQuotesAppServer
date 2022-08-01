@@ -2,8 +2,14 @@ import { Request, Response } from 'express'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { User } from 'models'
-import { validateGoogle, validateLogin, validateRegister } from 'schema'
-import { sendConfirmMail } from 'mail'
+import {
+  validateGoogle,
+  validateLogin,
+  validatePasswordRecover,
+  validateRegister,
+} from 'schema'
+import { sendConfirmMail, sendPasswordRecoveryEmail } from 'mail'
+import validatePasswords from 'schema/passwords'
 
 export const userRegister = async (req: Request, res: Response) => {
   const { userName, password, email } = req.body
@@ -83,10 +89,15 @@ export const userLogin = async (req: Request, res: Response) => {
       return res.status(422).send('Please confirm your email')
     }
 
-    const validPass = bcrypt.compare(req.body.password, user.password as string)
+    const validPass = await bcrypt.compare(
+      req.body.password,
+      user.password as string
+    )
     if (!validPass) {
       return res.status(422).send('Please provide valid credentials')
     }
+
+    console.log(validPass)
 
     const token = jwt.sign(
       { _id: user._id, name: user.email },
@@ -121,6 +132,64 @@ export const googleLogin = async (req: Request, res: Response) => {
       process.env.TOKEN_SECRET
     )
     res.header('auth-token', token).send({ token: token })
+  } catch (error) {
+    res.status(500).send({ error: 'something went wrong...' })
+  }
+}
+
+export const userPasswordRecoverEMail = async (req: Request, res: Response) => {
+  const { error } = validatePasswordRecover(req.body)
+  try {
+    if (error) {
+      return res.status(422).send(error.details[0].message)
+    }
+
+    const isMailExist = await User.findOne({ email: req.body.email })
+
+    if (!isMailExist) {
+      return res.status(422).send('Email not found')
+    }
+
+    const token = jwt.sign(
+      { _id: isMailExist._id, name: isMailExist.userName },
+      process.env.TOKEN_SECRET
+    )
+
+    await sendPasswordRecoveryEmail(
+      isMailExist.email,
+      token,
+      isMailExist.userName
+    )
+
+    return res.status(200).send('Password Recovery Email sent')
+  } catch (error) {
+    res.status(500).send({ error: 'something went wrong...' })
+  }
+}
+
+export const newUserPassword = async (req: Request, res: Response) => {
+  const { error } = validatePasswords(req.body)
+
+  try {
+    if (error) {
+      return res.status(422).send(error.details[0].message)
+    }
+
+    const token = req.body.token
+    const { _id } = jwt.verify(token, process.env.TOKEN_SECRET) as any
+    const user = await User.findById(_id)
+
+    if (!user) {
+      return res.status(422).send('User not found')
+    }
+
+    const salt = bcrypt.genSaltSync(10)
+    const hashedPassword = bcrypt.hashSync(req.body.password, salt)
+
+    user.password = hashedPassword
+    await user.save()
+
+    return res.status(200).send('Password changed')
   } catch (error) {
     res.status(500).send({ error: 'something went wrong...' })
   }
