@@ -14,7 +14,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 const swaggerMiddleware = () => {
   const swaggerDocument = _yamljs.default.load('src/config/swagger.yaml');
 
-  return [_swaggerUiExpress.default.serve, _swaggerUiExpress.default.setup(swaggerDocument, {
+  return [_swaggerUiExpress.default.setup(swaggerDocument, {
     customSiteTitle: 'Band API'
   })];
 };

@@ -10,7 +10,7 @@ var _mongoose = _interopRequireDefault(require("mongoose"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const registerSchema = new _mongoose.default.Schema({
-  user_name: {
+  userName: {
     type: String,
     lowercase: true,
     required: true
@@ -20,8 +20,7 @@ const registerSchema = new _mongoose.default.Schema({
     required: true
   },
   password: {
-    type: String,
-    required: true
+    type: String
   },
   repeatPassword: {
     type: String

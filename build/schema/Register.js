@@ -12,7 +12,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 const validateRegister = data => {
   const schema = _joi.default.object({
     email: _joi.default.string().email().required(),
-    user_name: _joi.default.string().lowercase().min(3).max(15).required(),
+    userName: _joi.default.string().lowercase().min(3).max(15).required(),
     password: _joi.default.string().lowercase().min(8).max(15).required(),
     repeatPassword: _joi.default.string().valid(_joi.default.ref('password')).required().messages({
       'any.only': 'passwords does not match'
