@@ -26,3 +26,9 @@ export const addMovieHandler = async (req: Request, res: Response) => {
 
   return res.status(200).json(movie)
 }
+
+export const getAllMoviesHandler = async (_: Request, res: Response) => {
+  const movies = await Movie.find({}, { __v: 0 })
+
+  return res.status(200).json(movies)
+}
