@@ -97,8 +97,6 @@ export const userLogin = async (req: Request, res: Response) => {
       return res.status(422).send('Please provide valid credentials')
     }
 
-    console.log(validPass)
-
     const token = jwt.sign(
       { _id: user._id, name: user.email },
       process.env.TOKEN_SECRET
@@ -116,9 +114,10 @@ export const googleLogin = async (req: Request, res: Response) => {
     if (error) {
       return res.status(422).send(error.details[0].message)
     }
-    const user = await User.findOne({ email: req.body.email })
 
-    if (user) {
+    const user = await User.find({ email: req.body.email })
+
+    if (user.length > 0) {
       return res.status(422).send('User already exists')
     }
 
@@ -128,10 +127,10 @@ export const googleLogin = async (req: Request, res: Response) => {
     })
 
     const token = jwt.sign(
-      { _id: newUser._id, name: newUser.userName },
+      { _id: newUser._id, name: newUser.email },
       process.env.TOKEN_SECRET
     )
-    res.header('auth-token', token).send({ token: token })
+    return res.status(200).send(token)
   } catch (error) {
     res.status(500).send({ error: 'something went wrong...' })
   }
@@ -190,6 +189,20 @@ export const newUserPassword = async (req: Request, res: Response) => {
     await user.save()
 
     return res.status(200).send('Password changed')
+  } catch (error) {
+    res.status(500).send({ error: 'something went wrong...' })
+  }
+}
+
+export const getUser = async (req: Request, res: Response) => {
+  try {
+    const user = await User.findOne({ email: req.body.email })
+
+    if (!user) {
+      return res.status(422).send('User not found')
+    }
+
+    return res.status(200).json(user)
   } catch (error) {
     res.status(500).send({ error: 'something went wrong...' })
   }

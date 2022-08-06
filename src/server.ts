@@ -5,7 +5,8 @@ import path from 'path'
 import SwaggerUI from 'swagger-ui-express'
 import bodyParser from 'body-parser'
 import { connectDB } from 'config'
-import { RegisterRouter } from 'routes'
+import { upload } from 'utils'
+import { RegisterRouter, MovieRouter } from 'routes'
 import { swaggerMiddleware } from 'middlewares'
 dotenv.config({ path: path.resolve(__dirname, '../.env') })
 const app = express()
@@ -15,9 +16,10 @@ connectDB(false)
 app.use(cors())
 app.use(bodyParser.json())
 app.use(express.urlencoded({ extended: false }))
-app.use('/images', express.static(path.join(__dirname, 'public')))
+app.use('/images', express.static(path.join(__dirname, '../images')))
 
 app.use('/user', RegisterRouter)
+app.use('/movie', upload.single('poster'), MovieRouter)
 
 app.use('/api-docs', SwaggerUI.serve, swaggerMiddleware())
 
