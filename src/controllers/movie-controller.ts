@@ -32,3 +32,13 @@ export const getAllMoviesHandler = async (_: Request, res: Response) => {
 
   return res.status(200).json(movies)
 }
+
+export const getSingleMovieHandler = async (req: Request, res: Response) => {
+  const movie = await Movie.findById(req.params.id, { __v: 0 })
+
+  if (!movie) {
+    return res.status(404).send('Movie not found')
+  }
+
+  return res.status(200).json(movie)
+}
