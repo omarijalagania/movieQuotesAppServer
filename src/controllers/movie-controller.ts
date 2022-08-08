@@ -1,19 +1,19 @@
 import { Request, Response } from 'express'
 import { Movie } from 'models'
-import { validateMovie } from 'schema'
+//import { validateMovie } from 'schema'
 
 export const addMovieHandler = async (req: Request, res: Response) => {
-  const { error } = validateMovie(req.body)
+  //const { error } = validateMovie(req.body)
   const poster = req?.file?.path
 
-  if (error) {
-    return res.status(422).send(error.details[0].message)
-  }
+  // if (error) {
+  //   return res.status(422).send(error.details[0].message)
+  // }
 
   const data = {
     movieNameEn: req.body.movieNameEn,
     movieNameGe: req.body.movieNameGe,
-    genre: req.body.genre,
+    genre: JSON.parse(req.body.genre),
     directorEn: req.body.directorEn,
     directorGe: req.body.directorGe,
     descriptionEn: req.body.descriptionEn,
@@ -22,15 +22,23 @@ export const addMovieHandler = async (req: Request, res: Response) => {
     userId: req.body.userId,
   }
 
+  console.log(data)
+
   const movie = await Movie.create(data)
 
   return res.status(200).json(movie)
 }
 
 export const getAllMoviesHandler = async (_: Request, res: Response) => {
-  const movies = await Movie.find({}, { __v: 0 })
-
-  return res.status(200).json(movies)
+  try {
+    const movies = await Movie.find({}, { __v: 0 })
+    if (!movies) {
+      return res.status(404).send('Movies not found')
+    }
+    return res.status(200).json(movies)
+  } catch (error) {
+    return res.status(500).send('Server error')
+  }
 }
 
 export const getSingleMovieHandler = async (req: Request, res: Response) => {

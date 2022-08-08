@@ -8,7 +8,14 @@ const moviesSchema = new mongoose.Schema({
     type: String,
   },
   genre: {
-    type: String,
+    type: Array,
+    required: false,
+    genre: {
+      type: String,
+    },
+    label: {
+      type: String,
+    },
   },
   directorEn: {
     type: String,
