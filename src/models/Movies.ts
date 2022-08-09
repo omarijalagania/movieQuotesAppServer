@@ -7,16 +7,16 @@ const moviesSchema = new mongoose.Schema({
   movieNameGe: {
     type: String,
   },
-  genre: {
-    type: Array,
-    required: false,
-    genre: {
-      type: String,
+  genre: [
+    {
+      genre: {
+        type: String,
+      },
+      label: {
+        type: String,
+      },
     },
-    label: {
-      type: String,
-    },
-  },
+  ],
   directorEn: {
     type: String,
   },

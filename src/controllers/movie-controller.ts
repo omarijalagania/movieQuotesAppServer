@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import { Movie } from 'models'
+import mongoose from 'mongoose'
 //import { validateMovie } from 'schema'
 
 export const addMovieHandler = async (req: Request, res: Response) => {
@@ -22,27 +23,63 @@ export const addMovieHandler = async (req: Request, res: Response) => {
     userId: req.body.userId,
   }
 
-  console.log(data)
-
   const movie = await Movie.create(data)
 
   return res.status(200).json(movie)
 }
 
-export const getAllMoviesHandler = async (_: Request, res: Response) => {
-  try {
-    const movies = await Movie.find({}, { __v: 0 })
-    if (!movies) {
-      return res.status(404).send('Movies not found')
-    }
-    return res.status(200).json(movies)
-  } catch (error) {
-    return res.status(500).send('Server error')
+export const getAllMoviesHandler = async (req: Request, res: Response) => {
+  const userId = req.params.userId
+
+  const movies = await Movie.find({ userId })
+  if (!movies) {
+    return res.status(404).send('Movies not found')
   }
+  return res.status(200).json(movies)
 }
 
 export const getSingleMovieHandler = async (req: Request, res: Response) => {
+  const isValid = mongoose.Types.ObjectId.isValid(req.params.id)
+
+  if (!isValid) {
+    return res.status(422).send('Invalid id')
+  }
   const movie = await Movie.findById(req.params.id, { __v: 0 })
+
+  if (!movie) {
+    return res.status(404).send('Movie not found')
+  }
+
+  return res.status(200).json(movie)
+}
+
+export const updateMovieHandler = async (req: Request, res: Response) => {
+  const isValid = mongoose.Types.ObjectId.isValid(req.params.id)
+
+  if (!isValid) {
+    console.log('Invalid id')
+    return res.status(422).send('Invalid id')
+  }
+  const movie = await Movie.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+  })
+
+  if (!movie) {
+    return res.status(404).send('Movie not found')
+  }
+
+  return res.status(200).json(movie)
+}
+
+export const deleteMovieHandler = async (req: Request, res: Response) => {
+  const isValid = mongoose.Types.ObjectId.isValid(req.params.id)
+
+  if (!isValid) {
+    console.log('Invalid id')
+    return res.status(422).send('Invalid id')
+  }
+
+  const movie = await Movie.findOneAndDelete({ _id: req.params.id })
 
   if (!movie) {
     return res.status(404).send('Movie not found')
