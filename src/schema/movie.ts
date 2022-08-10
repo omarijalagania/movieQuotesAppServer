@@ -3,22 +3,15 @@ import { RegisterTypes } from 'types'
 
 const validateMovie = (data: RegisterTypes) => {
   const schema = Joi.object({
-    movieNameEn: Joi.string(),
-    movieNameGe: Joi.string(),
-    genre: Joi.array()
-      .items(
-        Joi.object({
-          genre: Joi.string(),
-          label: Joi.string(),
-        })
-      )
-      .has(Joi.object({ genre: Joi.string(), label: Joi.string() })),
-    directorEn: Joi.string(),
-    directorGe: Joi.string(),
-    descriptionEn: Joi.string(),
-    descriptionGe: Joi.string(),
-    poster: Joi.string(),
+    movieNameEn: Joi.string().required(),
+    movieNameGe: Joi.string().required(),
+    genre: Joi.string().required(),
+    directorEn: Joi.string().required(),
+    directorGe: Joi.string().required(),
+    descriptionEn: Joi.string().required(),
+    descriptionGe: Joi.string().required(),
     userId: Joi.string(),
+    poster: Joi.string(),
   })
 
   return schema.validate(data)
