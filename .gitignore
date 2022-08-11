@@ -5,3 +5,5 @@ settings.json
 .env
 
 /build
+
+/images/*
