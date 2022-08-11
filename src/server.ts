@@ -11,6 +11,7 @@ import {
   MovieRouter,
   GenreRouter,
   CrudMovieRouter,
+  QuoteRouter,
 } from 'routes'
 import { swaggerMiddleware } from 'middlewares'
 dotenv.config({ path: path.resolve(__dirname, '../.env') })
@@ -25,6 +26,7 @@ app.use('/images', express.static(path.join(__dirname, '../images')))
 
 app.use('/user', RegisterRouter)
 app.use('/movie', upload.single('poster'), MovieRouter)
+app.use('/quote', upload.single('poster'), QuoteRouter)
 app.use('/movies', GenreRouter)
 app.use('/my-movies', CrudMovieRouter)
 app.use('/api-docs', SwaggerUI.serve, swaggerMiddleware())
