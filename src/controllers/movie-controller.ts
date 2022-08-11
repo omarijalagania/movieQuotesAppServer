@@ -68,7 +68,6 @@ export const updateMovieHandler = async (req: Request, res: Response) => {
   const isValid = mongoose.Types.ObjectId.isValid(req.params.id)
   const poster = req?.file?.path
   if (!isValid) {
-    console.log('Invalid id')
     return res.status(422).send('Invalid id')
   }
   const movie = await Movie.findByIdAndUpdate(req.params.id, {
