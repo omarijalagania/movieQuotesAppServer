@@ -8,7 +8,8 @@ const quoteSchema = new mongoose.Schema({
     type: String,
   },
   movieId: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Movie',
   },
   poster: {
     type: String,
