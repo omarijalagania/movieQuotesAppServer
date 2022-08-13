@@ -52,19 +52,21 @@ export const editQuoteHandler = async (req: Request, res: Response) => {
     }
   )
 
-  console.log(quote)
-
   return res.status(200).json(quote)
 }
 
-export const getSingleQuoteHandler = async (req: Request, res: Response) => {
-  const isValid = mongoose.Types.ObjectId.isValid(req.params.id)
-
-  if (!isValid) {
-    return res.status(422).send('Invalid id')
-  }
-
-  const quote = await Quote.find({ movieId: req.params.id })
+export const getQuoteHandler = async (_: Request, res: Response) => {
+  //const quote = await Quote.find().sort({ _id: -1 })
+  const quote = await Quote.aggregate([
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'userId',
+        foreignField: '_id',
+        as: 'user',
+      },
+    },
+  ])
 
   if (!quote) {
     return res.status(404).send('Quote not found')
