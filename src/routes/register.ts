@@ -7,6 +7,7 @@ import {
   userPasswordRecoverEMail,
   newUserPassword,
   getUser,
+  getUserById,
 } from 'controllers'
 
 const router = express.Router()
@@ -18,5 +19,6 @@ router.post('/confirm', userConfirm)
 router.post('/password/recover', userPasswordRecoverEMail)
 router.post('/password/new', newUserPassword)
 router.post('/get', getUser)
+router.get('/get/:userId', getUserById)
 
 export default router
