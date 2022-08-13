@@ -13,6 +13,7 @@ import {
   CrudMovieRouter,
   QuoteRouter,
   SingleQuotes,
+  CommentRoutes,
 } from 'routes'
 import { swaggerMiddleware } from 'middlewares'
 dotenv.config({ path: path.resolve(__dirname, '../.env') })
@@ -31,6 +32,8 @@ app.use('/quote', upload.single('poster'), QuoteRouter)
 app.use('/quotes', SingleQuotes)
 app.use('/movies', GenreRouter)
 app.use('/my-movies', CrudMovieRouter)
+app.use('/comments', CommentRoutes)
+
 app.use('/api-docs', SwaggerUI.serve, swaggerMiddleware())
 
 app.listen(process.env.PORT || '4400', () => {

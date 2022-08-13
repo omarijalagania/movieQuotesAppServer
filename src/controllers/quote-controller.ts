@@ -56,7 +56,6 @@ export const editQuoteHandler = async (req: Request, res: Response) => {
 }
 
 export const getQuoteHandler = async (_: Request, res: Response) => {
-  //const quote = await Quote.find().sort({ _id: -1 })
   const quote = await Quote.aggregate([
     {
       $lookup: {
@@ -66,6 +65,19 @@ export const getQuoteHandler = async (_: Request, res: Response) => {
         as: 'user',
       },
     },
+    {
+      $lookup: {
+        from: 'comments',
+        localField: '_id',
+        foreignField: 'quoteId',
+        as: 'comments',
+      },
+    },
+    {
+      $sort: {
+        _id: -1,
+      },
+    },
   ])
 
   if (!quote) {
@@ -73,4 +85,25 @@ export const getQuoteHandler = async (_: Request, res: Response) => {
   }
 
   return res.status(200).json(quote)
+}
+
+export const getSingleQuoteHandler = async (req: Request, res: Response) => {
+  // const isValid = mongoose.Types.ObjectId.isValid(req.params.movieId)
+
+  // if (!isValid) {
+  //   return res.status(422).send('Invalid id')
+  // }
+
+  await Quote.find(
+    {
+      movieId: req.params.movieId,
+      userId: req.params.userId,
+    },
+    (err: any, quote: any) => {
+      if (err) {
+        return res.status(500).send(err)
+      }
+      return res.status(200).json(quote)
+    }
+  )
 }
