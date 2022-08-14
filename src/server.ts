@@ -14,6 +14,7 @@ import {
   QuoteRouter,
   SingleQuotes,
   CommentRoutes,
+  LikesRouter,
 } from 'routes'
 import { swaggerMiddleware } from 'middlewares'
 dotenv.config({ path: path.resolve(__dirname, '../.env') })
@@ -33,6 +34,7 @@ app.use('/quotes', SingleQuotes)
 app.use('/movies', GenreRouter)
 app.use('/my-movies', CrudMovieRouter)
 app.use('/comments', CommentRoutes)
+app.use('/likes', LikesRouter)
 
 app.use('/api-docs', SwaggerUI.serve, swaggerMiddleware())
 
