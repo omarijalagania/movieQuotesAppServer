@@ -88,11 +88,11 @@ export const getQuoteHandler = async (_: Request, res: Response) => {
 }
 
 export const getSingleQuoteHandler = async (req: Request, res: Response) => {
-  // const isValid = mongoose.Types.ObjectId.isValid(req.params.movieId)
+  const isValid = mongoose.Types.ObjectId.isValid(req.params.movieId)
 
-  // if (!isValid) {
-  //   return res.status(422).send('Invalid id')
-  // }
+  if (!isValid) {
+    return res.status(422).send('Invalid id')
+  }
 
   await Quote.find(
     {
@@ -106,4 +106,20 @@ export const getSingleQuoteHandler = async (req: Request, res: Response) => {
       return res.status(200).json(quote)
     }
   )
+}
+
+export const deleteQuoteHandler = async (req: Request, res: Response) => {
+  const isValid = mongoose.Types.ObjectId.isValid(req.params.quoteId)
+
+  if (!isValid) {
+    return res.status(422).send('Invalid id')
+  }
+
+  const quote = await Quote.findByIdAndDelete(req.params.quoteId)
+
+  if (!quote) {
+    return res.status(404).send('Quote not found')
+  }
+
+  return res.status(200).json(quote)
 }
