@@ -2,6 +2,8 @@ import * as dotenv from 'dotenv'
 import express from 'express'
 import cors from 'cors'
 import path from 'path'
+import { httpServer, io, app } from 'utils'
+
 import SwaggerUI from 'swagger-ui-express'
 import bodyParser from 'body-parser'
 import { connectDB } from 'config'
@@ -17,8 +19,9 @@ import {
   LikesRouter,
 } from 'routes'
 import { swaggerMiddleware } from 'middlewares'
+
 dotenv.config({ path: path.resolve(__dirname, '../.env') })
-const app = express()
+
 app.use(express.json())
 connectDB(false)
 
@@ -38,7 +41,9 @@ app.use('/likes', LikesRouter)
 
 app.use('/api-docs', SwaggerUI.serve, swaggerMiddleware())
 
-app.listen(process.env.PORT || '4400', () => {
+io.listen(4343)
+
+httpServer.listen(process.env.PORT || '4400', () => {
   console.log(
     `Server is running on: ${process.env.BASE_URL}:${process.env.PORT}`
   )
