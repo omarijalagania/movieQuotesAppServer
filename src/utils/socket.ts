@@ -41,6 +41,11 @@ io.on('connection', (socket) => {
     io.to(socketId?.socketId).emit('gotNotification', notification)
   })
 
+  socket.on('notificationLike', (like) => {
+    let socketId = getUser(like?.userId)
+    io.to(socketId?.socketId).emit('gotNotificationLike', like)
+  })
+
   socket.on('disconnect', () => {
     removeUser(socket.id)
   })
