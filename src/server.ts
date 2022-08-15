@@ -17,6 +17,7 @@ import {
   SingleQuotes,
   CommentRoutes,
   LikesRouter,
+  NotificationsRouter,
 } from 'routes'
 import { swaggerMiddleware } from 'middlewares'
 
@@ -38,6 +39,7 @@ app.use('/movies', GenreRouter)
 app.use('/my-movies', CrudMovieRouter)
 app.use('/comments', CommentRoutes)
 app.use('/likes', LikesRouter)
+app.use('/notifications', NotificationsRouter)
 
 app.use('/api-docs', SwaggerUI.serve, swaggerMiddleware())
 
