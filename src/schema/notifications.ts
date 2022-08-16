@@ -3,10 +3,10 @@ import { RegisterTypes } from 'types'
 
 const validateNotifications = (data: RegisterTypes) => {
   const schema = Joi.object({
-    userId: Joi.string().required(),
-    notificationType: Joi.string().required(),
+    userId: Joi.string(),
+    notificationType: Joi.string(),
     isRead: Joi.boolean().required(),
-    notificationFor: Joi.string().required(),
+    notificationFor: Joi.string(),
   })
 
   return schema.validate(data)

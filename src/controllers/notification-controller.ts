@@ -52,3 +52,13 @@ export const getNotificationHandler = async (_: Request, res: Response) => {
 
   return res.status(200).json(notification)
 }
+
+export const updateNotificationHandler = async (_: Request, res: Response) => {
+  const notification = await Notification.updateMany({
+    $set: {
+      isRead: true,
+    },
+  })
+
+  return res.status(200).json(notification)
+}
