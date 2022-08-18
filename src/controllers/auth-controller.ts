@@ -207,3 +207,17 @@ export const getUser = async (req: Request, res: Response) => {
     res.status(500).send({ error: 'something went wrong...' })
   }
 }
+
+export const getUserById = async (req: Request, res: Response) => {
+  try {
+    const user = await User.findById(req.params.userId)
+
+    if (!user) {
+      return res.status(422).send('User not found')
+    }
+
+    return res.status(200).json(user)
+  } catch (error) {
+    res.status(500).send({ error: 'something went wrong...' })
+  }
+}

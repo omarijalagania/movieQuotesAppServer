@@ -36,7 +36,21 @@ export const getAllMoviesHandler = async (req: Request, res: Response) => {
     return res.status(422).send('Invalid id')
   }
 
-  const movies = await Movie.find({ userId })
+  const movies = await Movie.aggregate([
+    {
+      $match: { userId: new mongoose.Types.ObjectId(userId) },
+    },
+
+    {
+      $lookup: {
+        from: 'quotes',
+        localField: '_id',
+        foreignField: 'movieId',
+        as: 'quotes',
+      },
+    },
+  ])
+
   if (!movies) {
     return res.status(404).send('Movies not found')
   }
@@ -49,13 +63,26 @@ export const getSingleMovieHandler = async (req: Request, res: Response) => {
   if (!isValid) {
     return res.status(422).send('Invalid id')
   }
-  const movie = await Movie.findById(req.params.id, { __v: 0 })
+  const movie = await Movie.aggregate([
+    {
+      $match: { _id: new mongoose.Types.ObjectId(req.params.id) },
+    },
+
+    {
+      $lookup: {
+        from: 'quotes',
+        localField: '_id',
+        foreignField: 'movieId',
+        as: 'quotes',
+      },
+    },
+  ])
 
   if (!movie) {
     return res.status(404).send('Movie not found')
   }
 
-  return res.status(200).json(movie)
+  return res.status(200).json(...movie)
 }
 
 export const updateMovieHandler = async (req: Request, res: Response) => {

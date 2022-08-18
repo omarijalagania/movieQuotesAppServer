@@ -1,3 +1,6 @@
 export { default as User } from './Register'
 export { default as Movie } from './Movies'
 export { default as Genre } from './Genre'
+export { default as Quote } from './Quote'
+export { default as Comment } from './Comments'
+export { default as Notification } from './Notification'
