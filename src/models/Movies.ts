@@ -42,6 +42,12 @@ const moviesSchema = new mongoose.Schema({
       ref: 'Quote',
     },
   ],
+  users: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
+  ],
 })
 
 export default mongoose.model('Movie', moviesSchema)

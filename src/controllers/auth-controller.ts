@@ -33,6 +33,7 @@ export const userRegister = async (req: Request, res: Response) => {
       userName: userName,
       email: email,
       password: hashedPassword,
+      provider: 'email',
     })
 
     const token = jwt.sign(
@@ -110,20 +111,22 @@ export const userLogin = async (req: Request, res: Response) => {
 export const googleLogin = async (req: Request, res: Response) => {
   const { error } = validateGoogle(req.body)
 
+  const user = await User.find({ email: req.body.email })
+
+  if (user.length > 0) {
+    return res.status(422).send('User already exists')
+  }
+
   try {
     if (error) {
       return res.status(422).send(error.details[0].message)
     }
 
-    const user = await User.find({ email: req.body.email })
-
-    if (user.length > 0) {
-      return res.status(422).send('User already exists')
-    }
-
     const newUser = await User.create({
       userName: req.body.userName,
       email: req.body.email,
+      image: req.body.image,
+      provider: 'google',
     })
 
     const token = jwt.sign(

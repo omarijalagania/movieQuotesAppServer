@@ -10,6 +10,7 @@ const validateRegister = (data: RegisterTypes) => {
       .valid(Joi.ref('password'))
       .required()
       .messages({ 'any.only': 'passwords does not match' }),
+    provider: Joi.string(),
   })
 
   return schema.validate(data)

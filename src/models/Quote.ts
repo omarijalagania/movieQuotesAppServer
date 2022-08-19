@@ -30,6 +30,12 @@ const quoteSchema = new mongoose.Schema({
       ref: 'User',
     },
   ],
+  user: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
+  ],
 })
 
 export default mongoose.model('Quote', quoteSchema)
