@@ -57,6 +57,32 @@ export const getAllMoviesHandler = async (req: Request, res: Response) => {
   return res.status(200).json(movies)
 }
 
+export const getMoviesHandlerNoId = async (_: Request, res: Response) => {
+  const movies = await Movie.aggregate([
+    {
+      $lookup: {
+        from: 'quotes',
+        localField: '_id',
+        foreignField: 'movieId',
+        as: 'quotes',
+      },
+    },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'userId',
+        foreignField: '_id',
+        as: 'user',
+      },
+    },
+  ])
+
+  if (!movies) {
+    return res.status(404).send('Movies not found')
+  }
+  return res.status(200).json(movies)
+}
+
 export const getSingleMovieHandler = async (req: Request, res: Response) => {
   const isValid = mongoose.Types.ObjectId.isValid(req.params.id)
 

@@ -20,6 +20,12 @@ const registerSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  image: {
+    type: String,
+  },
+  provider: {
+    type: String,
+  },
 })
 
 export default mongoose.model('User', registerSchema)

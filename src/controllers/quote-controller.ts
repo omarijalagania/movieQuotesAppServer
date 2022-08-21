@@ -73,6 +73,7 @@ export const getQuoteHandler = async (_: Request, res: Response) => {
         as: 'comments',
       },
     },
+
     {
       $sort: {
         _id: -1,
