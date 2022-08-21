@@ -19,4 +19,4 @@ name: Build and deploy
               git pull
               npm ci
               npm run build
-              pm2 restart nextjs-example
+              pm2 restart 8
