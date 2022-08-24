@@ -271,6 +271,7 @@ export const updateRegularUserHandler = async (req: Request, res: Response) => {
 
   const { error } = validateRegularUser(req.body)
   const poster = req?.file?.path
+  console.log(req.body)
   try {
     if (error) {
       return res.status(422).send(error.details[0].message)
@@ -281,6 +282,7 @@ export const updateRegularUserHandler = async (req: Request, res: Response) => {
         userName: req.body.userName,
         email: req.body.email,
         poster: poster,
+        secondaryEmails: JSON.parse(req.body.secondaryEmails),
       },
     })
 

@@ -29,6 +29,21 @@ const registerSchema = new mongoose.Schema({
   poster: {
     type: String,
   },
+  secondaryEmails: [
+    {
+      secondaryEmail: {
+        type: String,
+      },
+      secondary: {
+        type: Boolean,
+        default: true,
+      },
+      isVerified: {
+        type: Boolean,
+        default: false,
+      },
+    },
+  ],
 })
 
 export default mongoose.model('User', registerSchema)
