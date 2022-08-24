@@ -7,6 +7,7 @@ import {
   validateLogin,
   validatePasswordRecover,
   validateRegister,
+  validateRegularUser,
 } from 'schema'
 import { sendConfirmMail, sendPasswordRecoveryEmail } from 'mail'
 import { validatePasswords } from 'schema'
@@ -35,6 +36,7 @@ export const userRegister = async (req: Request, res: Response) => {
       email: email,
       password: hashedPassword,
       provider: 'email',
+      poster: '',
     })
 
     const token = jwt.sign(
@@ -252,6 +254,38 @@ export const getUserById = async (req: Request, res: Response) => {
 
     if (!user) {
       return res.status(422).send('User not found')
+    }
+
+    return res.status(200).json(user)
+  } catch (error) {
+    res.status(500).send({ error: 'something went wrong...' })
+  }
+}
+
+export const updateRegularUserHandler = async (req: Request, res: Response) => {
+  const isValid = mongoose.Types.ObjectId.isValid(req.params.userId)
+
+  if (!isValid) {
+    return res.status(422).send('Invalid user id')
+  }
+
+  const { error } = validateRegularUser(req.body)
+  const poster = req?.file?.path
+  try {
+    if (error) {
+      return res.status(422).send(error.details[0].message)
+    }
+
+    const user = await User.findByIdAndUpdate(req.params.userId, {
+      $set: {
+        userName: req.body.userName,
+        email: req.body.email,
+        poster: poster,
+      },
+    })
+
+    if (!user) {
+      return res.status(404).send('User not found')
     }
 
     return res.status(200).json(user)
