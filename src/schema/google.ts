@@ -4,9 +4,10 @@ import { RegisterTypes } from 'types'
 const validateGoogle = (data: RegisterTypes) => {
   const schema = Joi.object({
     userName: Joi.string().lowercase().min(3).max(15).required(),
-    email: Joi.string().email().required(),
-    image: Joi.string().required(),
     provider: Joi.string(),
+    poster: Joi.any(),
+    email: Joi.string().email(),
+    image: Joi.string(),
   })
 
   return schema.validate(data)

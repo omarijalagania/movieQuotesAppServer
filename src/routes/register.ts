@@ -8,7 +8,9 @@ import {
   newUserPassword,
   getUser,
   getUserById,
+  googleUserUpdate,
 } from 'controllers'
+import { upload } from 'utils'
 
 const router = express.Router()
 
@@ -20,5 +22,6 @@ router.post('/password/recover', userPasswordRecoverEMail)
 router.post('/password/new', newUserPassword)
 router.post('/get', getUser)
 router.get('/get/:userId', getUserById)
+router.put('/update/:userId', upload.single('poster'), googleUserUpdate)
 
 export default router

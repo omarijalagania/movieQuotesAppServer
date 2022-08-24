@@ -26,6 +26,9 @@ const registerSchema = new mongoose.Schema({
   provider: {
     type: String,
   },
+  poster: {
+    type: String,
+  },
 })
 
 export default mongoose.model('User', registerSchema)

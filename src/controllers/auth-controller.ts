@@ -9,7 +9,8 @@ import {
   validateRegister,
 } from 'schema'
 import { sendConfirmMail, sendPasswordRecoveryEmail } from 'mail'
-import validatePasswords from 'schema/passwords'
+import { validatePasswords } from 'schema'
+import mongoose from 'mongoose'
 
 export const userRegister = async (req: Request, res: Response) => {
   const { userName, password, email } = req.body
@@ -127,6 +128,7 @@ export const googleLogin = async (req: Request, res: Response) => {
       email: req.body.email,
       image: req.body.image,
       provider: 'google',
+      avatar: '',
     })
 
     const token = jwt.sign(
@@ -136,6 +138,39 @@ export const googleLogin = async (req: Request, res: Response) => {
     return res.status(200).send(token)
   } catch (error) {
     res.status(500).send({ error: 'something went wrong...' })
+  }
+}
+
+export const googleUserUpdate = async (req: Request, res: Response) => {
+  const isValid = mongoose.Types.ObjectId.isValid(req.params.userId)
+
+  if (!isValid) {
+    return res.status(422).send('Invalid user id')
+  }
+
+  const poster = req?.file?.path
+  const { error } = validateGoogle(req.body)
+
+  if (error) {
+    return res.status(422).send(error.details[0].message)
+  }
+
+  try {
+    const user = await User.findByIdAndUpdate(req.params.userId, {
+      $set: {
+        userName: req.body.userName,
+        email: req.body.email,
+        provider: 'google',
+        poster: poster,
+      },
+    })
+
+    if (!user) {
+      return res.status(404).send('User not found')
+    }
+    return res.status(200).json(user)
+  } catch (error) {
+    return res.status(500).send({ error: 'something went wrong...' })
   }
 }
 

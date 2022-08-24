@@ -1,6 +1,11 @@
+import * as dotenv from 'dotenv'
+import path from 'path'
 import { Server } from 'socket.io'
 import { createServer } from 'http'
 import express from 'express'
+
+dotenv.config({ path: path.resolve(__dirname, '../../.env') })
+
 export const app = express()
 export const httpServer = createServer(app)
 export const io = new Server(httpServer, {
