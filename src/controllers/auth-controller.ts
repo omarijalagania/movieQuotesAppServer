@@ -36,6 +36,7 @@ export const userRegister = async (req: Request, res: Response) => {
       email: email,
       password: hashedPassword,
       provider: 'email',
+      primary: true,
       poster: '',
     })
 
@@ -271,18 +272,28 @@ export const updateRegularUserHandler = async (req: Request, res: Response) => {
 
   const { error } = validateRegularUser(req.body)
   const poster = req?.file?.path
-  console.log(req.body)
+
   try {
     if (error) {
       return res.status(422).send(error.details[0].message)
     }
+
+    const oneUSer = await User.find({ _id: req.params.userId })
+
+    if (oneUSer.length === 0) {
+      return res.status(422).send('User not found')
+    }
+
+    let arr = oneUSer[0].secondaryEmails
+
+    const joined = [...arr, ...JSON.parse(req.body.secondaryEmails)]
 
     const user = await User.findByIdAndUpdate(req.params.userId, {
       $set: {
         userName: req.body.userName,
         email: req.body.email,
         poster: poster,
-        secondaryEmails: JSON.parse(req.body.secondaryEmails),
+        secondaryEmails: joined,
       },
     })
 
