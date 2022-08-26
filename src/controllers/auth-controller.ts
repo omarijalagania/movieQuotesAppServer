@@ -273,35 +273,104 @@ export const updateRegularUserHandler = async (req: Request, res: Response) => {
   const { error } = validateRegularUser(req.body)
   const poster = req?.file?.path
 
+  const parsedArray = JSON.parse(req.body.secondaryEmails)
+
   try {
     if (error) {
       return res.status(422).send(error.details[0].message)
     }
 
-    const oneUSer = await User.find({ _id: req.params.userId })
+    const oneUser = await User.find({ _id: req.params.userId })
 
-    if (oneUSer.length === 0) {
+    if (oneUser.length === 0) {
       return res.status(422).send('User not found')
     }
 
-    let arr = oneUSer[0].secondaryEmails
+    if (
+      req.body.password !== null &&
+      req.body.oldPassword !== null &&
+      req.body.password !== '' &&
+      req.body.oldPassword !== ''
+    ) {
+      const validPass = bcrypt.compare(
+        req.body.oldPassword,
+        oneUser[0].password as string
+      )
+      if (!validPass) {
+        return res.status(422).send('Please provide valid credentials')
+      }
+      let hashedPassword = bcrypt.hashSync(req.body.password, 10)
 
-    const joined = [...arr, ...JSON.parse(req.body.secondaryEmails)]
+      let arr = oneUser[0].secondaryEmails
 
-    const user = await User.findByIdAndUpdate(req.params.userId, {
-      $set: {
-        userName: req.body.userName,
-        email: req.body.email,
-        poster: poster,
-        secondaryEmails: joined,
-      },
-    })
+      const joined = [...arr, ...parsedArray]
 
-    if (!user) {
-      return res.status(404).send('User not found')
+      const user = await User.findByIdAndUpdate(req.params.userId, {
+        $set: {
+          userName: req.body.userName,
+          email: req.body.email,
+          poster: poster,
+          secondaryEmails: joined,
+          password: hashedPassword,
+        },
+      })
+
+      if (!user) {
+        return res.status(404).send('User not found')
+      }
+
+      return res.status(200).json(user)
+    } else {
+      let arr = oneUser[0].secondaryEmails
+
+      const joined = [...arr, ...parsedArray]
+
+      const user = await User.findByIdAndUpdate(req.params.userId, {
+        $set: {
+          userName: req.body.userName,
+          email: req.body.email,
+          poster: poster,
+          secondaryEmails: joined,
+        },
+      })
+
+      if (!user) {
+        return res.status(404).send('User not found')
+      }
+
+      return res.status(200).json(user)
+    }
+  } catch (error) {
+    res.status(500).send({ error: 'something went wrong...' })
+  }
+}
+
+export const removeUserEmail = async (req: Request, res: Response) => {
+  const isValid = mongoose.Types.ObjectId.isValid(req.params.userId)
+
+  const email = req.body.email
+
+  if (!isValid) {
+    return res.status(422).send('Invalid user id')
+  }
+
+  try {
+    const oneUser = await User.updateOne(
+      { _id: req.params.userId },
+
+      {
+        $pull: {
+          secondaryEmails: {
+            secondaryEmail: email,
+          },
+        },
+      }
+    )
+    if (!oneUser) {
+      return res.status(422).send('User not found')
     }
 
-    return res.status(200).json(user)
+    return res.status(200).json(oneUser)
   } catch (error) {
     res.status(500).send({ error: 'something went wrong...' })
   }
