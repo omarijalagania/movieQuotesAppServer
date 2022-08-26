@@ -11,6 +11,7 @@ import {
   googleUserUpdate,
   updateRegularUserHandler,
   removeUserEmail,
+  confirmUserEmail,
 } from 'controllers'
 import { upload } from 'utils'
 
@@ -20,6 +21,7 @@ router.post('/register', userRegister)
 router.post('/register/google', googleLogin)
 router.post('/login', userLogin)
 router.post('/confirm', userConfirm)
+router.post('/verify', confirmUserEmail)
 router.post('/password/recover', userPasswordRecoverEMail)
 router.post('/password/new', newUserPassword)
 router.post('/get', getUser)

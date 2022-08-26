@@ -375,3 +375,29 @@ export const removeUserEmail = async (req: Request, res: Response) => {
     res.status(500).send({ error: 'something went wrong...' })
   }
 }
+
+export const confirmUserEmail = async (req: Request, res: Response) => {
+  try {
+    const token = req.body.token
+    const { _id } = jwt.verify(token, process.env.TOKEN_SECRET) as any
+    const user = await User.updateOne(
+      { _id: _id },
+      {
+        secondaryEmails: {
+          $elemMatch: {
+            secondaryEmail: req.body.email,
+          },
+        },
+      },
+      {
+        $set: {
+          'secondaryEmails.$.isVerified': true,
+        },
+      }
+    )
+
+    return res.status(200).send(user)
+  } catch (error) {
+    res.status(500).send({ error: 'something went wrong...' })
+  }
+}
