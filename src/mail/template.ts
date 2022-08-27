@@ -113,15 +113,15 @@ export const userEmailConfirm = (userName: string, token: string) => {
               color: white;
               text-decoration: none;
             "
-            href="${process.env.FRONTEND_URL}/home/confirm/${token}"
+            href="${process.env.FRONTEND_URL}/feed/profile/verify/${token}"
             >Verify account</a
           >
           <p style="color: white; padding-top: 20px">
             If clicking doesn't work, you can try copying and pasting it to your
             browser:
           </p>
-          <a style="color: #ddccaa" href="${process.env.FRONTEND_URL}/home/confirm/${token}"
-            >${process.env.FRONTEND_URL}/home/confirm/${token}</a
+          <a style="color: #ddccaa" href="${process.env.FRONTEND_URL}/feed/profile/verify/${token}"
+            >${process.env.FRONTEND_URL}/feed/profile/verify/${token}</a
           >
           <p style="color: white; padding-top: 20px">
             If you have any problems, please contact us: support@moviequotes.ge
@@ -130,7 +130,6 @@ export const userEmailConfirm = (userName: string, token: string) => {
         </div>
       </body>
     </html>
-    
     `
 }
 

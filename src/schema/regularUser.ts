@@ -9,6 +9,7 @@ const validateRegularUser = (data: RegisterTypes) => {
     userName: Joi.string().lowercase().min(3).max(15),
     secondaryEmails: Joi.any(),
     poster: Joi.any(),
+    token: Joi.string(),
   })
 
   return schema.validate(data)

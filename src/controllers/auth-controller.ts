@@ -9,7 +9,11 @@ import {
   validateRegister,
   validateRegularUser,
 } from 'schema'
-import { sendConfirmMail, sendPasswordRecoveryEmail } from 'mail'
+import {
+  sendConfirmMail,
+  sendPasswordRecoveryEmail,
+  sendVerifyMail,
+} from 'mail'
 import { validatePasswords } from 'schema'
 import mongoose from 'mongoose'
 
@@ -266,6 +270,8 @@ export const getUserById = async (req: Request, res: Response) => {
 export const updateRegularUserHandler = async (req: Request, res: Response) => {
   const isValid = mongoose.Types.ObjectId.isValid(req.params.userId)
 
+  const token = req.body.token
+
   if (!isValid) {
     return res.status(422).send('Invalid user id')
   }
@@ -305,6 +311,11 @@ export const updateRegularUserHandler = async (req: Request, res: Response) => {
 
       const joined = [...arr, ...parsedArray]
 
+      let lastAddedEmail =
+        req.body.secondaryEmails[req.body.secondaryEmails.length - 1]
+
+      await sendVerifyMail(lastAddedEmail, token, req.body.userName)
+
       const user = await User.findByIdAndUpdate(req.params.userId, {
         $set: {
           userName: req.body.userName,
@@ -324,6 +335,16 @@ export const updateRegularUserHandler = async (req: Request, res: Response) => {
       let arr = oneUser[0].secondaryEmails
 
       const joined = [...arr, ...parsedArray]
+
+      if (parsedArray.length > 0) {
+        let lastAddedEmail = parsedArray[parsedArray.length - 1]
+
+        await sendVerifyMail(
+          lastAddedEmail.secondaryEmail,
+          token,
+          req.body.userName
+        )
+      }
 
       const user = await User.findByIdAndUpdate(req.params.userId, {
         $set: {
@@ -380,23 +401,23 @@ export const confirmUserEmail = async (req: Request, res: Response) => {
   try {
     const token = req.body.token
     const { _id } = jwt.verify(token, process.env.TOKEN_SECRET) as any
-    const user = await User.updateOne(
-      { _id: _id },
-      {
-        secondaryEmails: {
-          $elemMatch: {
-            secondaryEmail: req.body.email,
+    if (
+      req.body.email !== '' ||
+      req.body.email !== null ||
+      req.body.email !== undefined
+    ) {
+      let email = req.body.email[0].secondaryEmail
+      const user = await User.updateOne(
+        { _id: _id, 'secondaryEmails.secondaryEmail': email },
+        {
+          $set: {
+            'secondaryEmails.$.isVerified': true,
           },
-        },
-      },
-      {
-        $set: {
-          'secondaryEmails.$.isVerified': true,
-        },
-      }
-    )
+        }
+      )
 
-    return res.status(200).send(user)
+      return res.status(200).send(user)
+    }
   } catch (error) {
     res.status(500).send({ error: 'something went wrong...' })
   }
