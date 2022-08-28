@@ -12,6 +12,7 @@ import {
   updateRegularUserHandler,
   removeUserEmail,
   confirmUserEmail,
+  makePrimaryEmail,
 } from 'controllers'
 import { upload } from 'utils'
 
@@ -33,5 +34,6 @@ router.put(
   upload.single('poster'),
   updateRegularUserHandler
 )
+router.put('/primary/email/:userId', makePrimaryEmail)
 
 export default router

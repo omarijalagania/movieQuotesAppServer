@@ -422,3 +422,31 @@ export const confirmUserEmail = async (req: Request, res: Response) => {
     res.status(500).send({ error: 'something went wrong...' })
   }
 }
+
+export const makePrimaryEmail = async (req: Request, res: Response) => {
+  const isValid = mongoose.Types.ObjectId.isValid(req.params.userId)
+  const primaryEmail = req.body.primaryEmail
+  const secondaryEmail = req.body.secondaryEmail
+
+  if (!isValid) {
+    return res.status(422).send('Invalid user id')
+  }
+
+  try {
+    const user = await User.updateOne(
+      {
+        _id: req.params.userId,
+        'secondaryEmails.secondaryEmail': secondaryEmail,
+      },
+      {
+        $set: {
+          email: secondaryEmail,
+          'secondaryEmails.$.secondaryEmail': primaryEmail,
+        },
+      }
+    )
+    return res.status(200).json(user)
+  } catch (error) {
+    res.status(500).send({ error: 'something went wrong...' })
+  }
+}
