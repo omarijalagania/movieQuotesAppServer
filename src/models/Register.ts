@@ -29,6 +29,10 @@ const registerSchema = new mongoose.Schema({
   poster: {
     type: String,
   },
+  primary: {
+    type: Boolean,
+    default: true,
+  },
   secondaryEmails: [
     {
       secondaryEmail: {

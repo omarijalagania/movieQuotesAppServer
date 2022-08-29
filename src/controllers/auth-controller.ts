@@ -9,7 +9,11 @@ import {
   validateRegister,
   validateRegularUser,
 } from 'schema'
-import { sendConfirmMail, sendPasswordRecoveryEmail } from 'mail'
+import {
+  sendConfirmMail,
+  sendPasswordRecoveryEmail,
+  sendVerifyMail,
+} from 'mail'
 import { validatePasswords } from 'schema'
 import mongoose from 'mongoose'
 
@@ -36,6 +40,7 @@ export const userRegister = async (req: Request, res: Response) => {
       email: email,
       password: hashedPassword,
       provider: 'email',
+      primary: true,
       poster: '',
     })
 
@@ -265,31 +270,181 @@ export const getUserById = async (req: Request, res: Response) => {
 export const updateRegularUserHandler = async (req: Request, res: Response) => {
   const isValid = mongoose.Types.ObjectId.isValid(req.params.userId)
 
+  const token = req.body.token
+
   if (!isValid) {
     return res.status(422).send('Invalid user id')
   }
 
   const { error } = validateRegularUser(req.body)
   const poster = req?.file?.path
-  console.log(req.body)
+
+  const parsedArray = JSON.parse(req.body.secondaryEmails)
+
   try {
     if (error) {
       return res.status(422).send(error.details[0].message)
     }
 
-    const user = await User.findByIdAndUpdate(req.params.userId, {
-      $set: {
-        userName: req.body.userName,
-        email: req.body.email,
-        poster: poster,
-        secondaryEmails: JSON.parse(req.body.secondaryEmails),
-      },
-    })
+    const oneUser = await User.find({ _id: req.params.userId })
 
-    if (!user) {
-      return res.status(404).send('User not found')
+    if (oneUser.length === 0) {
+      return res.status(422).send('User not found')
     }
 
+    if (
+      req.body.password !== null &&
+      req.body.oldPassword !== null &&
+      req.body.password !== '' &&
+      req.body.oldPassword !== ''
+    ) {
+      const validPass = bcrypt.compare(
+        req.body.oldPassword,
+        oneUser[0].password as string
+      )
+      if (!validPass) {
+        return res.status(422).send('Please provide valid credentials')
+      }
+      let hashedPassword = bcrypt.hashSync(req.body.password, 10)
+
+      let arr = oneUser[0].secondaryEmails
+
+      const joined = [...arr, ...parsedArray]
+
+      let lastAddedEmail =
+        req.body.secondaryEmails[req.body.secondaryEmails.length - 1]
+
+      await sendVerifyMail(lastAddedEmail, token, req.body.userName)
+
+      const user = await User.findByIdAndUpdate(req.params.userId, {
+        $set: {
+          userName: req.body.userName,
+          email: req.body.email,
+          poster: poster,
+          secondaryEmails: joined,
+          password: hashedPassword,
+        },
+      })
+
+      if (!user) {
+        return res.status(404).send('User not found')
+      }
+
+      return res.status(200).json(user)
+    } else {
+      let arr = oneUser[0].secondaryEmails
+
+      const joined = [...arr, ...parsedArray]
+
+      if (parsedArray.length > 0) {
+        let lastAddedEmail = parsedArray[parsedArray.length - 1]
+
+        await sendVerifyMail(
+          lastAddedEmail.secondaryEmail,
+          token,
+          req.body.userName
+        )
+      }
+
+      const user = await User.findByIdAndUpdate(req.params.userId, {
+        $set: {
+          userName: req.body.userName,
+          email: req.body.email,
+          poster: poster,
+          secondaryEmails: joined,
+        },
+      })
+
+      if (!user) {
+        return res.status(404).send('User not found')
+      }
+
+      return res.status(200).json(user)
+    }
+  } catch (error) {
+    res.status(500).send({ error: 'something went wrong...' })
+  }
+}
+
+export const removeUserEmail = async (req: Request, res: Response) => {
+  const isValid = mongoose.Types.ObjectId.isValid(req.params.userId)
+
+  const email = req.body.email
+
+  if (!isValid) {
+    return res.status(422).send('Invalid user id')
+  }
+
+  try {
+    const oneUser = await User.updateOne(
+      { _id: req.params.userId },
+
+      {
+        $pull: {
+          secondaryEmails: {
+            secondaryEmail: email,
+          },
+        },
+      }
+    )
+    if (!oneUser) {
+      return res.status(422).send('User not found')
+    }
+
+    return res.status(200).json(oneUser)
+  } catch (error) {
+    res.status(500).send({ error: 'something went wrong...' })
+  }
+}
+
+export const confirmUserEmail = async (req: Request, res: Response) => {
+  try {
+    const token = req.body.token
+    const { _id } = jwt.verify(token, process.env.TOKEN_SECRET) as any
+    if (
+      req.body.email !== '' ||
+      req.body.email !== null ||
+      req.body.email !== undefined
+    ) {
+      let email = req.body.email[0].secondaryEmail
+      const user = await User.updateOne(
+        { _id: _id, 'secondaryEmails.secondaryEmail': email },
+        {
+          $set: {
+            'secondaryEmails.$.isVerified': true,
+          },
+        }
+      )
+
+      return res.status(200).send(user)
+    }
+  } catch (error) {
+    res.status(500).send({ error: 'something went wrong...' })
+  }
+}
+
+export const makePrimaryEmail = async (req: Request, res: Response) => {
+  const isValid = mongoose.Types.ObjectId.isValid(req.params.userId)
+  const primaryEmail = req.body.primaryEmail
+  const secondaryEmail = req.body.secondaryEmail
+
+  if (!isValid) {
+    return res.status(422).send('Invalid user id')
+  }
+
+  try {
+    const user = await User.updateOne(
+      {
+        _id: req.params.userId,
+        'secondaryEmails.secondaryEmail': secondaryEmail,
+      },
+      {
+        $set: {
+          email: secondaryEmail,
+          'secondaryEmails.$.secondaryEmail': primaryEmail,
+        },
+      }
+    )
     return res.status(200).json(user)
   } catch (error) {
     res.status(500).send({ error: 'something went wrong...' })

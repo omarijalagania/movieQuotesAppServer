@@ -12,6 +12,7 @@ const validateRegister = (data: RegisterTypes) => {
       .messages({ 'any.only': 'passwords does not match' }),
     provider: Joi.string(),
     poster: Joi.any(),
+    primary: Joi.boolean(),
   })
 
   return schema.validate(data)

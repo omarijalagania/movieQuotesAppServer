@@ -10,6 +10,9 @@ import {
   getUserById,
   googleUserUpdate,
   updateRegularUserHandler,
+  removeUserEmail,
+  confirmUserEmail,
+  makePrimaryEmail,
 } from 'controllers'
 import { upload } from 'utils'
 
@@ -19,9 +22,11 @@ router.post('/register', userRegister)
 router.post('/register/google', googleLogin)
 router.post('/login', userLogin)
 router.post('/confirm', userConfirm)
+router.post('/verify', confirmUserEmail)
 router.post('/password/recover', userPasswordRecoverEMail)
 router.post('/password/new', newUserPassword)
 router.post('/get', getUser)
+router.post('/remove/email/:userId', removeUserEmail)
 router.get('/get/:userId', getUserById)
 router.put('/update/:userId', upload.single('poster'), googleUserUpdate)
 router.put(
@@ -29,5 +34,6 @@ router.put(
   upload.single('poster'),
   updateRegularUserHandler
 )
+router.put('/primary/email/:userId', makePrimaryEmail)
 
 export default router
