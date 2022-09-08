@@ -19,6 +19,9 @@ export const confirmEmail = (userName: string, token: string) => {
           padding: 10px;
         "
       >
+      <div style="text-align: center; padding-top: 20px">
+      <img src="https://i.ibb.co/fXPTqGS/quote.png" alt="icon" />
+    </div>
         <h3
           style="
             text-align: center;
@@ -29,7 +32,7 @@ export const confirmEmail = (userName: string, token: string) => {
         >
           Movie quotes
         </h3>
-        <div style="width: 70%">
+        <div style="width: 70%; padding: 0 7px">
           <p style="color: white">Hola ${userName}!</p>
           <p style="color: white; padding: 20px 0px">
             Thanks for joining Movie quotes! We really appreciate it. Please click
@@ -87,6 +90,9 @@ export const userEmailConfirm = (userName: string, token: string) => {
           padding: 10px;
         "
       >
+      <div style="text-align: center; padding-top: 20px">
+      <img src="https://i.ibb.co/fXPTqGS/quote.png" alt="icon" />
+    </div>
         <h3
           style="
             text-align: center;
@@ -97,7 +103,7 @@ export const userEmailConfirm = (userName: string, token: string) => {
         >
           Movie quotes
         </h3>
-        <div style="width: 70%">
+        <div style="width: 70%; padding: 0 7px">
           <p style="color: white">Hola ${userName}!</p>
           <p style="color: white; padding: 20px 0px">
             Thanks for joining Movie quotes! We really appreciate it. Please click
@@ -154,6 +160,9 @@ export const passwordRecoverTemplate = (userName: string, token: string) => {
           padding: 10px;
         "
       >
+      <div style="text-align: center; padding-top: 20px">
+      <img src="https://i.ibb.co/fXPTqGS/quote.png" alt="icon" />
+    </div>
         <h3
           style="
             text-align: center;
@@ -164,7 +173,7 @@ export const passwordRecoverTemplate = (userName: string, token: string) => {
         >
           Movie quotes
         </h3>
-        <div style="width: 70%">
+        <div style="width: 70%; padding: 0 7px">
           <p style="color: white">Hola ${userName}!</p>
           <p style="color: white; padding: 20px 0px">
             Here is your link to reset your password:

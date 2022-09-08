@@ -292,12 +292,7 @@ export const updateRegularUserHandler = async (req: Request, res: Response) => {
       return res.status(422).send('User not found')
     }
 
-    if (
-      req.body.password !== null &&
-      req.body.oldPassword !== null &&
-      req.body.password !== '' &&
-      req.body.oldPassword !== ''
-    ) {
+    if (req.body.password !== null && req.body.password !== '') {
       const validPass = bcrypt.compare(
         req.body.oldPassword,
         oneUser[0].password as string

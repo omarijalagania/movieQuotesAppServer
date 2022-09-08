@@ -19,5 +19,5 @@ jobs:
             cd movie-quotes-api-omarijalagania
             git pull
             npm ci
-            npm run build
+            npm run build:prod
             pm2 restart 8
