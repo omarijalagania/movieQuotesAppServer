@@ -55,7 +55,9 @@ export const editQuoteHandler = async (req: Request, res: Response) => {
   return res.status(200).json(quote)
 }
 
-export const getQuoteHandler = async (_: Request, res: Response) => {
+export const getQuoteHandler = async (req: Request, res: Response) => {
+  const { page = req.query.page, limit = req.query.limit } = req.query
+
   const quote = await Quote.aggregate([
     {
       $lookup: {
@@ -78,6 +80,12 @@ export const getQuoteHandler = async (_: Request, res: Response) => {
       $sort: {
         _id: -1,
       },
+    },
+    {
+      $skip: (Number(page) - 1) * Number(limit),
+    },
+    {
+      $limit: Number(limit),
     },
   ])
 
