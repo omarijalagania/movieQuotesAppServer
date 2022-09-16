@@ -16,7 +16,7 @@ export const confirmEmail = (userName: string, token: string) => {
             #0d0b14 98.75%
           );
           height: 100vh;
-          padding: 10px;
+          padding: 0 100px;
         "
       >
       <div style="text-align: center; padding-top: 20px">
@@ -55,9 +55,11 @@ export const confirmEmail = (userName: string, token: string) => {
             If clicking doesn't work, you can try copying and pasting it to your
             browser:
           </p>
+          <div style="word-wrap: break-word">
           <a style="color: #ddccaa" href="${process.env.FRONTEND_URL}/home/confirm/${token}"
             >${process.env.FRONTEND_URL}/home/confirm/${token}</a
           >
+          </div>
           <p style="color: white; padding-top: 20px">
             If you have any problems, please contact us: support@moviequotes.ge
           </p>
@@ -87,7 +89,7 @@ export const userEmailConfirm = (userName: string, token: string) => {
             #0d0b14 98.75%
           );
           height: 100vh;
-          padding: 10px;
+          padding: 0 100px;
         "
       >
       <div style="text-align: center; padding-top: 20px">
@@ -157,7 +159,7 @@ export const passwordRecoverTemplate = (userName: string, token: string) => {
             #0d0b14 98.75%
           );
           height: 100vh;
-          padding: 10px;
+          padding: 0 100px;
         "
       >
       <div style="text-align: center; padding-top: 20px">
