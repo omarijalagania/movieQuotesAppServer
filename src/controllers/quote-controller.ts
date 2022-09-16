@@ -77,6 +77,15 @@ export const getQuoteHandler = async (req: Request, res: Response) => {
     },
 
     {
+      $lookup: {
+        from: 'movies',
+        localField: 'movieId',
+        foreignField: '_id',
+        as: 'movie',
+      },
+    },
+
+    {
       $sort: {
         _id: -1,
       },
